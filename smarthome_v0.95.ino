@@ -1,4 +1,4 @@
-// SmartHome v0.95 by SH7
+// SmartHome v0.96 by SH7
 // microDS3231, NecDecoder libraries by AlexGyver
 
 //определяются коды кнопок пульта
@@ -23,7 +23,7 @@
 
 //инициализируем девайсы
 LiquidCrystal_I2C lcd(0x3f,16,2);
-AccelStepper curtains(AccelStepper::FULL4WIRE, 7, 5, 4, 3);
+AccelStepper curtains(AccelStepper::FULL4WIRE, 10, 5, 4, 3);
 MicroDS3231 time;
 DHT dht(7, DHT22);
 NecDecoder remote;
@@ -192,38 +192,38 @@ void DrawLCD(){
   }
   if (mode==1){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Temp On: "+String(tempHeatOn)+"*C");
+    strOut=MakeString("Temperature On");
     lcd.print(strOut);  
     
     lcd.setCursor(0, 1);            
-    strOut=MakeString("");
+    strOut=MakeString(String(tempHeatOn)+"*C");
     lcd.print(strOut);  
   }
   if (mode==2){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Temp Off: "+String(tempHeatOff)+"*C");
+    strOut=MakeString("Temperature Off");
     lcd.print(strOut);  
     
     lcd.setCursor(0, 1);            
-    strOut=MakeString("");
+    strOut=MakeString(String(tempHeatOff)+"*C");
     lcd.print(strOut);  
   }
   if (mode==3){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Hum On: "+String(humVentOn)+"%");
+    strOut=MakeString("Humidity On");
     lcd.print(strOut);  
     
     lcd.setCursor(0, 1);            
-    strOut=MakeString("");
+    strOut=MakeString(String(humVentOn)+"%");
     lcd.print(strOut);  
   }
   if (mode==4){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Hum Off: "+String(humVentOff)+"%");
+    strOut=MakeString("Humidity Off");
     lcd.print(strOut);  
     
     lcd.setCursor(0, 1);            
-    strOut=MakeString("");
+    strOut=MakeString(String(humVentOff)+"%");
     lcd.print(strOut);  
   }
   if (mode==5){
@@ -239,12 +239,20 @@ void DrawLCD(){
   }
   if (mode==7){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Close: "+String(closeHours)+":"+String(closeMinutes));
+    strOut=MakeString("Close curtains");
     lcd.print(strOut);
+
+    lcd.setCursor(0, 1);            
+    strOut=MakeString(String(closeHours)+":"+String(closeMinutes));
+    lcd.print(strOut); 
   }
   if (mode==8){
     lcd.setCursor(0, 0);
-    strOut=MakeString("Open: "+String(openHours)+":"+String(openMinutes));
+    strOut=MakeString("Open curtains");
+    lcd.print(strOut); 
+
+    lcd.setCursor(0, 1);            
+    strOut=MakeString(String(openHours)+":"+String(openMinutes));
     lcd.print(strOut); 
   }
   if (mode==9){
@@ -261,10 +269,10 @@ void DrawLCD(){
 void ReadData(){
   //читаем с датчика
   rh = dht.readHumidity();
-  rt = dht.readTemperature()-0.5; //с поправкой на пол градуса, т.к. температура слегка завышается этим датчиком
+  rt = dht.readTemperature();
   rco2 = gasSensor.getPPM();
   
-  //проверяем считанное значение, если пустое то выдаем ошибку, если не пустое то производим вычисления
+  //проверяем считанное значение, если нечисло то выдаем ошибку, если число то производим вычисления
   if (isnan(rh) || isnan(rt) || isnan(rco2)) {
     //если не удалось считать данные
     lcd.setCursor(0, 0);
@@ -320,7 +328,7 @@ void setup() {
   lcd.backlight();// Включаем подсветку
   delay(100);
   lcd.setCursor(0, 0);
-  lcd.print("Smart Home v.0.95");
+  lcd.print("Smart Home v.0.96");
   lcd.setCursor(0, 1);
   lcd.print("by SH-7"); 
   delay(1000);
